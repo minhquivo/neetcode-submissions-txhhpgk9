@@ -1,0 +1,40 @@
+class Solution:
+    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
+        n = len(edges)
+        adj = [[] for i in range(n+1)]
+        for u, v in edges: 
+            adj[u].append(v)
+            adj[v].append(u)
+
+        visit = [False] * (n+1)
+        cycle = set()
+        cycleStart = -1 
+
+        def dfs(node, par): 
+            nonlocal cycleStart
+            if visit[node]: #if node has been visited 
+                cycleStart = node
+                return True
+            
+            # if node not visited
+            visit[node] = True 
+            for neighbor in adj[node]: 
+                if neighbor == par: 
+                    continue 
+                if dfs(neighbor, node): 
+                    if cycleStart != -1: 
+                        cycle.add(node)
+                    if node == cycleStart: 
+                        cycleStart = -1 
+                    
+                    return True 
+            return False 
+
+
+        dfs(1, -1) 
+
+        for u, v in reversed(edges): 
+            if u in cycle and v in cycle: 
+                return [u,v]
+        
+        return []
